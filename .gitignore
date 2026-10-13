@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+*/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment and Secrets
+.env
+.env.*
+!.env.example
+*.env
+server/.env
+client/.env
+
+# Local Database Files
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+server/prisma/dev.db
+server/prisma/*.db
+
+# Build Outputs
+dist/
+build/
+*/dist/
+*/build/
+
+# Logs
+logs/
+*.log
+
+# OS and IDE Metadata
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

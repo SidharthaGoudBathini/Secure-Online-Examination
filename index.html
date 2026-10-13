@@ -1,0 +1,1619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Secure Online Examination System | Secure. Fair. Reliable.</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23142B4F' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z'/></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Canvas Confetti CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: {
+              50: '#F0F4F8',
+              100: '#D9E2EC',
+              200: '#BCCCDC',
+              300: '#9FB3C8',
+              400: '#829AB1',
+              500: '#627D98',
+              600: '#486581',
+              700: '#334E68',
+              800: '#243B53',
+              900: '#142B4F', // Primary Navy
+              950: '#0B1728',
+            },
+            royal: {
+              50: '#EDF5FF',
+              100: '#D6E7FF',
+              200: '#ADCFFF',
+              300: '#85B6FE',
+              400: '#5C9DFE',
+              500: '#3478F6', // Secondary Royal Blue
+              600: '#1859D3',
+              700: '#1142A0',
+              800: '#0B2C6D',
+              900: '#05163A',
+            },
+            surface: '#F5F7FB',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    body {
+      background-color: #F5F7FB;
+      font-family: 'Inter', system-ui, sans-serif;
+    }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #f1f5f9; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    .fade-in { animation: fadeIn 0.25s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body class="text-slate-800 antialiased selection:bg-blue-600 selection:text-white">
+
+  <!-- ================= TOP NAVIGATION BAR ================= -->
+  <header id="mainHeader" class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-xs">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <!-- Brand Logo -->
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="navigatePage('landing')">
+        <div class="w-10 h-10 rounded-xl bg-navy-900 flex items-center justify-center text-white shadow-sm hover:bg-royal-600 transition">
+          <svg class="w-6 h-6 text-royal-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
+        <div>
+          <span class="text-base sm:text-lg font-black text-navy-900 leading-tight block tracking-tight">SecureExam</span>
+          <span class="text-[10px] uppercase font-bold text-royal-600 tracking-wider hidden sm:block">Secure. Fair. Reliable.</span>
+        </div>
+      </div>
+
+      <!-- Quick Role Switcher Toolbar -->
+      <div class="hidden md:flex items-center space-x-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs">
+        <span class="text-[11px] font-medium text-slate-500 px-2 flex items-center">
+          <span class="w-2 h-2 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span>
+          Role Mode:
+        </span>
+        <button id="roleBtnLanding" onclick="navigatePage('landing')" class="px-2.5 py-1 rounded-lg font-semibold bg-white text-navy-900 shadow-xs">Landing</button>
+        <button id="roleBtnStudent" onclick="loginRole('STUDENT')" class="px-2.5 py-1 rounded-lg font-medium text-slate-600 hover:text-slate-900">Student</button>
+        <button id="roleBtnFaculty" onclick="loginRole('FACULTY')" class="px-2.5 py-1 rounded-lg font-medium text-slate-600 hover:text-slate-900">Faculty</button>
+        <button id="roleBtnAdmin" onclick="loginRole('ADMIN')" class="px-2.5 py-1 rounded-lg font-medium text-slate-600 hover:text-slate-900">Admin</button>
+      </div>
+
+      <!-- User Info & Action -->
+      <div id="navUserArea" class="flex items-center space-x-3">
+        <!-- Injected dynamically -->
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= MAIN CONTENT APP CONTAINER ================= -->
+  <main id="appContainer" class="min-h-[calc(100vh-4rem)]">
+    <!-- View pages injected via JavaScript -->
+  </main>
+
+  <!-- ================= TOAST CONTAINER ================= -->
+  <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 max-w-sm w-full pointer-events-none"></div>
+
+  <!-- ================= GLOBAL JAVASCRIPT LOGIC ================= -->
+  <script>
+    // --- Application State ---
+    const state = {
+      currentUser: null,
+      currentRole: null,
+      activePage: 'landing', // 'landing', 'student_dash', 'exam_instructions', 'readiness', 'exam_taking', 'submission_confirm', 'results', 'faculty_dash', 'faculty_monitor', 'faculty_qbank', 'admin_dash', 'admin_users', 'admin_security', 'admin_audit'
+      
+      // Active Examination Taking State
+      currentExam: {
+        id: 'exam-cs201',
+        title: 'CS201: Data Structures Mid-Term Examination',
+        code: 'EXAM-CS201-MID',
+        durationMinutes: 45,
+        totalMarks: 50,
+        passingMarks: 20,
+        tabSwitchLimit: 3,
+        allowNegative: true,
+        negativeValue: 0.25,
+      },
+      questions: [
+        {
+          id: 'q1',
+          text: 'What is the worst-case time complexity of searching for an element in an unbalanced Binary Search Tree (BST)?',
+          type: 'MCQ',
+          marks: 5,
+          options: [
+            { id: 'q1-o1', text: 'O(1)', isCorrect: false },
+            { id: 'q1-o2', text: 'O(log n)', isCorrect: false },
+            { id: 'q1-o3', text: 'O(n)', isCorrect: true },
+            { id: 'q1-o4', text: 'O(n log n)', isCorrect: false }
+          ],
+          explanation: 'In the worst case (skewed tree), a BST degenerates into a linked list resulting in O(n) search time.'
+        },
+        {
+          id: 'q2',
+          text: 'Which of the following data structures operates on the First-In, First-Out (FIFO) principle?',
+          type: 'MCQ',
+          marks: 5,
+          options: [
+            { id: 'q2-o1', text: 'Stack', isCorrect: false },
+            { id: 'q2-o2', text: 'Queue', isCorrect: true },
+            { id: 'q2-o3', text: 'Binary Heap', isCorrect: false },
+            { id: 'q2-o4', text: 'Priority Queue', isCorrect: false }
+          ],
+          explanation: 'A Queue adheres strictly to the First-In, First-Out (FIFO) principle.'
+        },
+        {
+          id: 'q3',
+          text: 'Which of the following sorting algorithms have an average time complexity of O(n log n)? (Select all that apply)',
+          type: 'MULTI_SELECT',
+          marks: 10,
+          options: [
+            { id: 'q3-o1', text: 'Merge Sort', isCorrect: true },
+            { id: 'q3-o2', text: 'Quick Sort', isCorrect: true },
+            { id: 'q3-o3', text: 'Bubble Sort', isCorrect: false },
+            { id: 'q3-o4', text: 'Heap Sort', isCorrect: true }
+          ],
+          explanation: 'Merge Sort, Quick Sort, and Heap Sort all feature average-case running time of O(n log n).'
+        },
+        {
+          id: 'q4',
+          text: 'What algorithm is commonly utilized to find the shortest path from a single source node in a weighted graph with non-negative edge weights?',
+          type: 'SHORT_ANSWER',
+          marks: 10,
+          options: [
+            { id: 'q4-o1', text: 'Dijkstra', isCorrect: true }
+          ],
+          explanation: "Dijkstra's Algorithm finds shortest path trees in graphs with non-negative edge weights."
+        },
+        {
+          id: 'q5',
+          text: 'In an AVL tree, what is the maximum permissible difference between heights of left and right subtrees for any given node?',
+          type: 'MCQ',
+          marks: 10,
+          options: [
+            { id: 'q5-o1', text: '0', isCorrect: false },
+            { id: 'q5-o2', text: '1', isCorrect: true },
+            { id: 'q5-o3', text: '2', isCorrect: false },
+            { id: 'q5-o4', text: 'Unlimited', isCorrect: false }
+          ],
+          explanation: 'In AVL trees, the balance factor of every node must be strictly -1, 0, or +1.'
+        },
+        {
+          id: 'q6',
+          text: 'What is the minimum number of stacks required to implement a standard FIFO Queue?',
+          type: 'MCQ',
+          marks: 10,
+          options: [
+            { id: 'q6-o1', text: '1', isCorrect: false },
+            { id: 'q6-o2', text: '2', isCorrect: true },
+            { id: 'q6-o3', text: '3', isCorrect: false },
+            { id: 'q6-o4', text: '4', isCorrect: false }
+          ],
+          explanation: 'Two stacks are required to reverse order twice and achieve FIFO behavior.'
+        }
+      ],
+      userAnswers: {}, // { [qId]: { selectedOptionIds: [], textResponse: '', isMarkedForReview: false } }
+      currentQIndex: 0,
+      tabSwitchCount: 0,
+      examTimerSeconds: 45 * 60,
+      examTimerInterval: null,
+      lastEvaluatedResult: null,
+
+      // Mock DB for Users, Courses, Audits
+      usersList: [
+        { id: 'u1', fullName: 'Alex Walker', email: 'student@secureexam.edu', role: 'STUDENT', isActive: true },
+        { id: 'u2', fullName: 'Dr. Robert Oppenheimer', email: 'faculty@secureexam.edu', role: 'FACULTY', isActive: true },
+        { id: 'u3', fullName: 'System Administrator', email: 'admin@secureexam.edu', role: 'ADMIN', isActive: true },
+        { id: 'u4', fullName: 'Jane Doe', email: 'jane.doe@secureexam.edu', role: 'STUDENT', isActive: true },
+        { id: 'u5', fullName: 'Prof. Ada Lovelace', email: 'dr.smith@secureexam.edu', role: 'FACULTY', isActive: true },
+      ],
+      auditLogs: [
+        { id: 'l1', action: 'SYSTEM_INIT', entity: 'System', user: 'System Admin', details: 'Initialized examination database & security policies', time: '10 mins ago' },
+        { id: 'l2', action: 'EXAM_PUBLISHED', entity: 'Examination', user: 'Dr. Robert Oppenheimer', details: 'Published CS201 Midterm Examination', time: '8 mins ago' },
+        { id: 'l3', action: 'LOGIN_SUCCESS', entity: 'User', user: 'Alex Walker (STUDENT)', details: 'Student established authenticated session', time: '5 mins ago' },
+      ],
+      securitySettings: [
+        { key: 'MAX_TAB_SWITCHES', value: '3', desc: 'Maximum allowed tab switches before proctor warning alert' },
+        { key: 'FULLSCREEN_STRICT', value: 'true', desc: 'Strict fullscreen mode enforcement during exam sessions' },
+        { key: 'WEBCAM_MONITORING', value: 'true', desc: 'Webcam snapshot and presence verification requirement' },
+        { key: 'COPY_PASTE_PREVENTION', value: 'true', desc: 'Disable clipboard copy/paste inside exam window' },
+      ]
+    };
+
+    // --- Toast Notification Helper ---
+    function showToast(message, type = 'info', title = '') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      
+      const bg = type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-900' :
+                 type === 'error' ? 'bg-rose-50 border-rose-200 text-rose-900' :
+                 type === 'warning' ? 'bg-amber-50 border-amber-200 text-amber-900' :
+                 'bg-blue-50 border-blue-200 text-blue-900';
+
+      const iconColor = type === 'success' ? 'text-emerald-600' :
+                        type === 'error' ? 'text-rose-600' :
+                        type === 'warning' ? 'text-amber-600' : 'text-blue-600';
+
+      toast.className = `pointer-events-auto p-4 rounded-xl border shadow-lg transition-all flex items-start space-x-3 ${bg} fade-in`;
+      toast.innerHTML = `
+        <div class="flex-1 text-xs">
+          ${title ? `<div class="font-bold text-sm mb-0.5 leading-snug">${title}</div>` : ''}
+          <div class="opacity-90">${message}</div>
+        </div>
+      `;
+
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 4000);
+    }
+
+    // --- Role Switching & Login ---
+    function loginRole(role) {
+      if (role === 'STUDENT') {
+        state.currentUser = { fullName: 'Alex Walker', email: 'student@secureexam.edu', role: 'STUDENT' };
+        state.currentRole = 'STUDENT';
+        navigatePage('student_dash');
+        showToast('Signed in as Student: Alex Walker', 'success');
+      } else if (role === 'FACULTY') {
+        state.currentUser = { fullName: 'Dr. Robert Oppenheimer', email: 'faculty@secureexam.edu', role: 'FACULTY' };
+        state.currentRole = 'FACULTY';
+        navigatePage('faculty_dash');
+        showToast('Signed in as Faculty: Dr. Robert Oppenheimer', 'success');
+      } else if (role === 'ADMIN') {
+        state.currentUser = { fullName: 'System Administrator', email: 'admin@secureexam.edu', role: 'ADMIN' };
+        state.currentRole = 'ADMIN';
+        navigatePage('admin_dash');
+        showToast('Signed in as Administrator: System Admin', 'success');
+      }
+      updateNavbar();
+    }
+
+    function logoutUser() {
+      state.currentUser = null;
+      state.currentRole = null;
+      navigatePage('landing');
+      updateNavbar();
+      showToast('Logged out of session', 'info');
+    }
+
+    function updateNavbar() {
+      const area = document.getElementById('navUserArea');
+      const rLanding = document.getElementById('roleBtnLanding');
+      const rStudent = document.getElementById('roleBtnStudent');
+      const rFaculty = document.getElementById('roleBtnFaculty');
+      const rAdmin = document.getElementById('roleBtnAdmin');
+
+      [rLanding, rStudent, rFaculty, rAdmin].forEach(b => {
+        b.className = 'px-2.5 py-1 rounded-lg font-medium text-slate-600 hover:text-slate-900';
+      });
+
+      if (state.activePage === 'landing') rLanding.className = 'px-2.5 py-1 rounded-lg font-semibold bg-white text-navy-900 shadow-xs';
+      else if (state.currentRole === 'STUDENT') rStudent.className = 'px-2.5 py-1 rounded-lg font-semibold bg-white text-navy-900 shadow-xs';
+      else if (state.currentRole === 'FACULTY') rFaculty.className = 'px-2.5 py-1 rounded-lg font-semibold bg-white text-navy-900 shadow-xs';
+      else if (state.currentRole === 'ADMIN') rAdmin.className = 'px-2.5 py-1 rounded-lg font-semibold bg-white text-navy-900 shadow-xs';
+
+      if (state.currentUser) {
+        const badgeColor = state.currentUser.role === 'ADMIN' ? 'bg-purple-100 text-purple-800 border-purple-200' :
+                           state.currentUser.role === 'FACULTY' ? 'bg-blue-100 text-blue-800 border-blue-200' :
+                           'bg-emerald-100 text-emerald-800 border-emerald-200';
+
+        area.innerHTML = `
+          <div class="flex items-center space-x-3">
+            <div class="text-right hidden sm:block">
+              <span class="text-xs font-bold text-navy-900 block leading-tight">${state.currentUser.fullName}</span>
+              <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full border ${badgeColor}">${state.currentUser.role}</span>
+            </div>
+            <button onclick="logoutUser()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition">
+              Sign Out
+            </button>
+          </div>
+        `;
+      } else {
+        area.innerHTML = `
+          <button onclick="loginRole('STUDENT')" class="text-xs font-bold text-navy-900 px-3 py-2 rounded-xl hover:bg-slate-100 transition">Log In</button>
+          <button onclick="loginRole('STUDENT')" class="text-xs font-bold bg-royal-500 hover:bg-royal-600 text-white px-4 py-2 rounded-xl shadow-xs transition">Get Started</button>
+        `;
+      }
+    }
+
+    // --- Page Router ---
+    function navigatePage(pageName) {
+      state.activePage = pageName;
+      const container = document.getElementById('appContainer');
+      const header = document.getElementById('mainHeader');
+
+      // Hide header on distraction-minimized exam taking screen
+      if (pageName === 'exam_taking') {
+        header.classList.add('hidden');
+      } else {
+        header.classList.remove('hidden');
+      }
+
+      updateNavbar();
+
+      switch (pageName) {
+        case 'landing':
+          renderLandingPage(container);
+          break;
+        case 'student_dash':
+          renderStudentDashboard(container);
+          break;
+        case 'exam_instructions':
+          renderExamInstructions(container);
+          break;
+        case 'readiness':
+          renderSystemReadiness(container);
+          break;
+        case 'exam_taking':
+          renderExamTaking(container);
+          break;
+        case 'submission_confirm':
+          renderSubmissionConfirmation(container);
+          break;
+        case 'results':
+          renderResultsPage(container);
+          break;
+        case 'faculty_dash':
+          renderFacultyDashboard(container);
+          break;
+        case 'faculty_monitor':
+          renderLiveMonitoring(container);
+          break;
+        case 'faculty_qbank':
+          renderQuestionBank(container);
+          break;
+        case 'admin_dash':
+          renderAdminDashboard(container);
+          break;
+        case 'admin_users':
+          renderAdminUsers(container);
+          break;
+        case 'admin_security':
+          renderAdminSecurity(container);
+          break;
+        case 'admin_audit':
+          renderAdminAuditLogs(container);
+          break;
+        default:
+          renderLandingPage(container);
+      }
+      window.scrollTo(0, 0);
+    }
+
+    // ================= 1. LANDING PAGE =================
+    function renderLandingPage(container) {
+      container.innerHTML = `
+        <div class="fade-in">
+          <!-- Hero Section -->
+          <section class="pt-12 pb-16 lg:pt-20 lg:pb-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
+            <div class="inline-flex items-center space-x-2 bg-royal-50 border border-royal-200 px-3.5 py-1.5 rounded-full mb-6 text-royal-600 text-xs font-bold tracking-wide">
+              <span class="w-2 h-2 rounded-full bg-royal-500 animate-ping"></span>
+              <span>Next-Generation Academic Assessment Platform</span>
+            </div>
+
+            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-navy-900 tracking-tight leading-tight">
+              Secure Online Examination System
+            </h1>
+
+            <p class="mt-4 text-xl sm:text-2xl font-black text-royal-600 tracking-tight">
+              Secure. Fair. Reliable.
+            </p>
+
+            <p class="mt-4 text-sm sm:text-base text-slate-600 max-w-2xl mx-auto leading-relaxed">
+              Empowering universities and certification authorities with distraction-minimized exam environments,
+              real-time AI proctoring telemetry, automated objective grading, and tamper-proof audit trails.
+            </p>
+
+            <!-- CTA Buttons -->
+            <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <button onclick="loginRole('STUDENT')" class="px-6 py-3.5 rounded-xl bg-navy-900 hover:bg-royal-600 text-white font-bold text-sm shadow-md transition flex items-center space-x-2">
+                <span>Start as Student</span>
+                <span>→</span>
+              </button>
+              <button onclick="loginRole('FACULTY')" class="px-6 py-3.5 rounded-xl bg-royal-500 hover:bg-royal-600 text-white font-bold text-sm shadow-md transition">
+                Faculty Portal
+              </button>
+              <button onclick="loginRole('ADMIN')" class="px-6 py-3.5 rounded-xl bg-white hover:bg-slate-100 text-navy-900 border border-slate-200 font-bold text-sm shadow-2xs transition">
+                Admin Command Center
+              </button>
+            </div>
+
+            <!-- Role Cards Grid -->
+            <div class="mt-14 max-w-4xl mx-auto bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xl text-left">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 gap-2">
+                <div>
+                  <h3 class="text-base font-bold text-navy-900">Interactive Role Demo Access</h3>
+                  <p class="text-xs text-slate-500">Click any card below to experience the respective workflow immediately:</p>
+                </div>
+                <span class="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 w-fit">
+                  Online & Ready
+                </span>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                <!-- Student -->
+                <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-white hover:border-emerald-300 hover:shadow-md transition flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center justify-between mb-3">
+                      <span class="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs">ST</span>
+                      <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">Student</span>
+                    </div>
+                    <h4 class="font-bold text-sm text-navy-900">Alex Walker</h4>
+                    <p class="text-xs text-slate-500 mt-1">Take CS201 Data Structures Mid-Term, hardware readiness checks, and view results.</p>
+                  </div>
+                  <button onclick="loginRole('STUDENT')" class="mt-4 w-full py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-xs transition">
+                    Enter as Student →
+                  </button>
+                </div>
+
+                <!-- Faculty -->
+                <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-white hover:border-blue-300 hover:shadow-md transition flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center justify-between mb-3">
+                      <span class="w-8 h-8 rounded-lg bg-blue-100 text-royal-600 flex items-center justify-center font-bold text-xs">FC</span>
+                      <span class="text-[10px] font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md">Faculty</span>
+                    </div>
+                    <h4 class="font-bold text-sm text-navy-900">Dr. Robert Oppenheimer</h4>
+                    <p class="text-xs text-slate-500 mt-1">Configure exams, manage question bank, monitor active takers live, and grade papers.</p>
+                  </div>
+                  <button onclick="loginRole('FACULTY')" class="mt-4 w-full py-2 bg-royal-500 hover:bg-royal-600 text-white rounded-xl text-xs font-bold shadow-xs transition">
+                    Enter as Faculty →
+                  </button>
+                </div>
+
+                <!-- Admin -->
+                <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/70 hover:bg-white hover:border-purple-300 hover:shadow-md transition flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center justify-between mb-3">
+                      <span class="w-8 h-8 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-xs">AD</span>
+                      <span class="text-[10px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-md">Administrator</span>
+                    </div>
+                    <h4 class="font-bold text-sm text-navy-900">System Administrator</h4>
+                    <p class="text-xs text-slate-500 mt-1">Manage user identities, courses, view security telemetry, and export audit CSVs.</p>
+                  </div>
+                  <button onclick="loginRole('ADMIN')" class="mt-4 w-full py-2 bg-navy-900 hover:bg-purple-800 text-white rounded-xl text-xs font-bold shadow-xs transition">
+                    Enter as Admin →
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Core Architecture Highlights -->
+          <section class="py-14 bg-white border-t border-slate-200">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div class="text-center max-w-2xl mx-auto mb-10">
+                <h2 class="text-2xl sm:text-3xl font-black text-navy-900 tracking-tight">Academic Integrity Engine</h2>
+                <p class="text-slate-500 text-xs mt-1">Built to meet stringent accreditation standards with zero compromises.</p>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
+                <div class="p-6 rounded-2xl bg-surface border border-slate-200">
+                  <div class="w-10 h-10 rounded-xl bg-navy-900 text-royal-300 flex items-center justify-center mb-4 font-bold">🔒</div>
+                  <h3 class="font-bold text-sm text-navy-900">Distraction-Minimized Window</h3>
+                  <p class="text-xs text-slate-600 mt-2 leading-relaxed">Enforced fullscreen, tab-switch telemetry, blur logging, and answer option randomization.</p>
+                </div>
+                <div class="p-6 rounded-2xl bg-surface border border-slate-200">
+                  <div class="w-10 h-10 rounded-xl bg-royal-500 text-white flex items-center justify-center mb-4 font-bold">👁️</div>
+                  <h3 class="font-bold text-sm text-navy-900">Live AI Proctoring Telemetry</h3>
+                  <p class="text-xs text-slate-600 mt-2 leading-relaxed">Socket.IO real-time incident dispatches, face verification feed, and direct instructor warning messaging.</p>
+                </div>
+                <div class="p-6 rounded-2xl bg-surface border border-slate-200">
+                  <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center mb-4 font-bold">⚡</div>
+                  <h3 class="font-bold text-sm text-navy-900">Autosaving & Evaluation</h3>
+                  <p class="text-xs text-slate-600 mt-2 leading-relaxed">Sub-second background response synchronization, timer auto-submission, and negative marking calculation.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      `;
+    }
+
+    // ================= 2. STUDENT DASHBOARD =================
+    function renderStudentDashboard(container) {
+      container.innerHTML = `
+        <div class="fade-in max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+          <!-- Welcome Banner -->
+          <div class="bg-gradient-to-r from-navy-900 via-navy-800 to-royal-700 rounded-3xl p-6 sm:p-8 text-white shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <span class="text-[11px] font-bold uppercase tracking-wider text-royal-300 bg-navy-950/50 px-3 py-1 rounded-full border border-royal-400/20">
+                Student Terminal
+              </span>
+              <h1 class="text-2xl sm:text-3xl font-black mt-2 tracking-tight">Welcome, Alex Walker!</h1>
+              <p class="text-xs sm:text-sm text-slate-200 mt-1 max-w-xl leading-relaxed">
+                Your assigned mid-term examination is active and ready. Verify your hardware readiness before starting.
+              </p>
+            </div>
+            <button onclick="navigatePage('exam_instructions')" class="px-5 py-3 bg-royal-500 hover:bg-royal-600 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center space-x-2 w-fit">
+              <span>Start CS201 Midterm</span>
+              <span>→</span>
+            </button>
+          </div>
+
+          <!-- Stats Row -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+              <span class="text-xs font-semibold text-slate-400 uppercase">Available Exams</span>
+              <div class="text-2xl font-black text-navy-900 mt-1">1 Open</div>
+              <span class="text-[11px] text-royal-600 font-semibold mt-1 block">Ready for testing</span>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+              <span class="text-xs font-semibold text-slate-400 uppercase">Completed Exams</span>
+              <div class="text-2xl font-black text-navy-900 mt-1">1 Evaluated</div>
+              <span class="text-[11px] text-emerald-600 font-semibold mt-1 block">Diagnostic OS (100%)</span>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+              <span class="text-xs font-semibold text-slate-400 uppercase">Average Score</span>
+              <div class="text-2xl font-black text-navy-900 mt-1">100%</div>
+              <span class="text-[11px] text-purple-600 font-semibold mt-1 block">Grade A+ (Distinction)</span>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+              <span class="text-xs font-semibold text-slate-400 uppercase">Proctor Integrity</span>
+              <div class="text-2xl font-black text-emerald-600 mt-1">100%</div>
+              <span class="text-[11px] text-slate-500 mt-1 block">0 Infractions Recorded</span>
+            </div>
+          </div>
+
+          <!-- Available Examinations Section -->
+          <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+              <div>
+                <h3 class="text-base font-bold text-navy-900">Current Assigned Examinations</h3>
+                <p class="text-xs text-slate-500">Exams within permitted test windows</p>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
+              <!-- Active Exam Card -->
+              <div class="p-5 rounded-2xl border-2 border-royal-400 bg-royal-50/20 shadow-xs flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="text-[11px] font-bold text-royal-600 bg-royal-50 px-2.5 py-0.5 rounded-md border border-royal-200">
+                      CS201 • Data Structures
+                    </span>
+                    <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2.5 py-0.5 rounded-full">
+                      ACTIVE NOW
+                    </span>
+                  </div>
+                  <h4 class="font-bold text-base text-navy-900">${state.currentExam.title}</h4>
+                  <p class="text-xs text-slate-600 mt-1.5 leading-relaxed">
+                    Comprehensive mid-term examination covering Trees, Graphs, Asymptotic Notation, and Sorting Algorithms.
+                  </p>
+
+                  <div className="grid grid-cols-3 gap-2 mt-4 pt-3 border-t border-slate-200/80 text-xs text-slate-600">
+                    <div>
+                      <span class="text-slate-400 block text-[10px] font-bold uppercase">Duration</span>
+                      <span class="font-bold text-navy-900">${state.currentExam.durationMinutes} Minutes</span>
+                    </div>
+                    <div>
+                      <span class="text-slate-400 block text-[10px] font-bold uppercase">Total Marks</span>
+                      <span class="font-bold text-navy-900">${state.currentExam.totalMarks} Points</span>
+                    </div>
+                    <div>
+                      <span class="text-slate-400 block text-[10px] font-bold uppercase">Pass Cutoff</span>
+                      <span class="font-bold text-navy-900">${state.currentExam.passingMarks} Points</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mt-5">
+                  <button onclick="navigatePage('exam_instructions')" class="w-full py-2.5 bg-navy-900 hover:bg-royal-600 text-white rounded-xl text-xs font-bold shadow-xs transition flex items-center justify-center space-x-1.5">
+                    <span>Take Examination Now</span>
+                    <span>→</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Scheduled Exam Card -->
+              <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="text-[11px] font-bold text-slate-500 bg-slate-100 px-2.5 py-0.5 rounded-md">
+                      CY401 • Cryptography
+                    </span>
+                    <span class="text-[10px] font-bold text-amber-700 bg-amber-100 px-2.5 py-0.5 rounded-full">
+                      SCHEDULED
+                    </span>
+                  </div>
+                  <h4 class="font-bold text-base text-navy-900">CY401: Applied Cryptography Final</h4>
+                  <p class="text-xs text-slate-500 mt-1.5 leading-relaxed">
+                    Public key infrastructure, AES encryption, digital signatures, and hash functions.
+                  </p>
+                </div>
+                <div class="mt-5 pt-3 border-t border-slate-200 flex items-center justify-between text-xs text-slate-400 font-medium">
+                  <span>Opens in 48 Hours</span>
+                  <button disabled class="px-3 py-1.5 bg-slate-200 text-slate-400 text-xs rounded-xl font-bold cursor-not-allowed">Locked</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ================= 3. EXAM INSTRUCTIONS =================
+    function renderExamInstructions(container) {
+      container.innerHTML = `
+        <div class="fade-in max-w-3xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+          <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs">
+            <span class="text-[11px] font-bold text-royal-600 uppercase tracking-wider">CS201 • EXAM-CS201-MID</span>
+            <h1 class="text-2xl font-black text-navy-900 tracking-tight mt-1">${state.currentExam.title}</h1>
+            <p class="text-xs text-slate-500 mt-1">Please read all examination rules carefully before starting.</p>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-6 border-t border-slate-100 text-xs">
+              <div class="p-3 bg-slate-50 rounded-xl">
+                <span class="text-slate-400 block font-medium">Duration</span>
+                <span class="font-bold text-navy-900 text-sm mt-0.5">${state.currentExam.durationMinutes} Mins</span>
+              </div>
+              <div class="p-3 bg-slate-50 rounded-xl">
+                <span class="text-slate-400 block font-medium">Total Marks</span>
+                <span class="font-bold text-navy-900 text-sm mt-0.5">${state.currentExam.totalMarks} Points</span>
+              </div>
+              <div class="p-3 bg-slate-50 rounded-xl">
+                <span class="text-slate-400 block font-medium">Pass Cutoff</span>
+                <span class="font-bold text-navy-900 text-sm mt-0.5">${state.currentExam.passingMarks} Points</span>
+              </div>
+              <div class="p-3 bg-slate-50 rounded-xl">
+                <span class="text-slate-400 block font-medium">Negative Mark</span>
+                <span class="font-bold text-rose-600 text-sm mt-0.5">-${state.currentExam.negativeValue}</span>
+              </div>
+            </div>
+
+            <!-- Rules list -->
+            <div class="mt-6 pt-6 border-t border-slate-100 space-y-3 text-xs text-slate-700 leading-relaxed">
+              <div class="flex items-start space-x-3">
+                <span class="text-base">🖥️</span>
+                <div><strong>Strict Fullscreen:</strong> The assessment executes in fullscreen mode. Minimizing or switching windows generates a security warning.</div>
+              </div>
+              <div class="flex items-start space-x-3">
+                <span class="text-base">⚠️</span>
+                <div><strong>Tab Switching Telemetry:</strong> Leaving the examination tab logs an incident. Maximum ${state.currentExam.tabSwitchLimit} switches allowed before proctor flag.</div>
+              </div>
+              <div class="flex items-start space-x-3">
+                <span class="text-base">📷</span>
+                <div><strong>Live AI Proctoring:</strong> Face presence and webcam feed will be verified for exam integrity.</div>
+              </div>
+              <div class="flex items-start space-x-3">
+                <span class="text-base">⏱️</span>
+                <div><strong>Automatic Submission:</strong> When timer reaches 00:00, latest saved answers are automatically evaluated on the server.</div>
+              </div>
+            </div>
+
+            <!-- Honor Pledge -->
+            <div class="mt-6 pt-5 border-t border-slate-100">
+              <label class="flex items-start space-x-3 p-4 rounded-2xl bg-royal-50/50 border border-royal-200 cursor-pointer">
+                <input id="honorCheck" type="checkbox" onchange="togglePledge(this.checked)" class="mt-0.5 w-4 h-4 text-royal-600 rounded">
+                <span class="text-xs text-slate-800 leading-normal">
+                  <strong>Academic Honor Pledge:</strong> I confirm that I will complete this examination independently without unauthorized aids, browser extensions, or external communication.
+                </span>
+              </label>
+            </div>
+
+            <div class="pt-6 mt-6 border-t border-slate-100 flex items-center justify-between">
+              <button onclick="navigatePage('student_dash')" class="text-xs font-bold text-slate-500 hover:text-navy-900">← Back</button>
+              <button id="btnProceedReadiness" onclick="navigatePage('readiness')" disabled class="px-6 py-3 bg-navy-900 text-white rounded-xl text-xs font-bold shadow-md transition disabled:opacity-40 disabled:cursor-not-allowed">
+                Proceed to System Readiness Check →
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function togglePledge(checked) {
+      document.getElementById('btnProceedReadiness').disabled = !checked;
+    }
+
+    // ================= 4. SYSTEM READINESS CHECK =================
+    function renderSystemReadiness(container) {
+      container.innerHTML = `
+        <div class="fade-in max-w-2xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6 text-center">
+          <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs">
+            <div class="w-14 h-14 rounded-2xl bg-royal-50 text-royal-600 flex items-center justify-center mx-auto mb-4 border border-royal-200 font-bold text-xl shadow-xs">
+              🛡️
+            </div>
+            <h1 class="text-2xl font-black text-navy-900 tracking-tight">System Readiness Check</h1>
+            <p class="text-xs text-slate-500 mt-1 max-w-md mx-auto">
+              Validating hardware telemetry, audio streams, fullscreen browser API, and server connectivity.
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-8 text-left text-xs">
+              <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/60 flex items-center justify-between">
+                <div>
+                  <h4 class="font-bold text-navy-900">Webcam Monitor</h4>
+                  <p class="text-[11px] text-slate-500">Virtual Camera Feed Active</p>
+                </div>
+                <span class="text-emerald-500 font-bold text-base">✓</span>
+              </div>
+              <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/60 flex items-center justify-between">
+                <div>
+                  <h4 class="font-bold text-navy-900">Audio Telemetry</h4>
+                  <p class="text-[11px] text-slate-500">Microphone Stream Optimal</p>
+                </div>
+                <span class="text-emerald-500 font-bold text-base">✓</span>
+              </div>
+              <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/60 flex items-center justify-between">
+                <div>
+                  <h4 class="font-bold text-navy-900">Fullscreen Containment</h4>
+                  <p class="text-[11px] text-slate-500">HTML5 Fullscreen API Ready</p>
+                </div>
+                <span class="text-emerald-500 font-bold text-base">✓</span>
+              </div>
+              <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/60 flex items-center justify-between">
+                <div>
+                  <h4 class="font-bold text-navy-900">Server Latency</h4>
+                  <p class="text-[11px] text-slate-500">12ms (Optimal Ping)</p>
+                </div>
+                <span class="text-emerald-500 font-bold text-base">✓</span>
+              </div>
+            </div>
+
+            <div class="mt-8 pt-6 border-t border-slate-100 flex items-center justify-between">
+              <button onclick="navigatePage('exam_instructions')" class="text-xs font-bold text-slate-500 hover:text-navy-900">← Back</button>
+              <button onclick="startExaminationSession()" class="px-8 py-3.5 bg-navy-900 hover:bg-royal-600 text-white rounded-xl text-xs font-bold shadow-md transition">
+                Enter Fullscreen & Begin Examination →
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ================= 5. EXAMINATION INTERFACE =================
+    function startExaminationSession() {
+      state.currentQIndex = 0;
+      state.tabSwitchCount = 0;
+      state.examTimerSeconds = state.currentExam.durationMinutes * 60;
+      state.userAnswers = {};
+
+      // Initialize answers map
+      state.questions.forEach(q => {
+        state.userAnswers[q.id] = { selectedOptionIds: [], textResponse: '', isMarkedForReview: false };
+      });
+
+      // Start Countdown Timer
+      if (state.examTimerInterval) clearInterval(state.examTimerInterval);
+      state.examTimerInterval = setInterval(() => {
+        state.examTimerSeconds--;
+        const timerEl = document.getElementById('examCountdownDisplay');
+        if (timerEl) {
+          const m = Math.floor(state.examTimerSeconds / 60).toString().padStart(2, '0');
+          const s = (state.examTimerSeconds % 60).toString().padStart(2, '0');
+          timerEl.innerText = `${m}:${s}`;
+          if (state.examTimerSeconds < 60) {
+            timerEl.className = 'font-mono font-bold text-rose-500 animate-pulse text-sm';
+          }
+        }
+        if (state.examTimerSeconds <= 0) {
+          clearInterval(state.examTimerInterval);
+          showToast('Time expired! Auto-submitting responses...', 'warning');
+          submitExamAction(true);
+        }
+      }, 1000);
+
+      navigatePage('exam_taking');
+    }
+
+    function renderExamTaking(container) {
+      const q = state.questions[state.currentQIndex];
+      const ans = state.userAnswers[q.id];
+
+      // Format timer
+      const m = Math.floor(state.examTimerSeconds / 60).toString().padStart(2, '0');
+      const s = (state.examTimerSeconds % 60).toString().padStart(2, '0');
+
+      container.innerHTML = `
+        <div class="min-h-screen bg-slate-900 text-slate-100 flex flex-col select-none fade-in">
+          <!-- Top Bar -->
+          <header class="bg-navy-950/95 border-b border-slate-800 px-4 sm:px-6 h-16 flex items-center justify-between sticky top-0 z-30">
+            <div class="flex items-center space-x-3">
+              <div class="w-9 h-9 rounded-xl bg-navy-900 border border-slate-700 flex items-center justify-center text-royal-400 font-bold">
+                🛡️
+              </div>
+              <div>
+                <h2 class="text-sm font-bold text-white tracking-tight">${state.currentExam.title}</h2>
+                <div class="flex items-center space-x-2 text-[10px] text-slate-400">
+                  <span class="text-royal-400 font-bold">${state.currentExam.code}</span>
+                  <span>•</span>
+                  <span class="text-emerald-400 font-semibold">✓ Responses Synchronized</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Timer & Actions -->
+            <div class="flex items-center space-x-3">
+              <!-- Simulate Tab Switch Violation Button for Testing -->
+              <button onclick="triggerSimulatedTabSwitch()" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-400 border border-slate-700 rounded-xl text-[11px] font-bold transition hidden sm:block">
+                ⚡ Simulate Tab Switch
+              </button>
+
+              <div class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-slate-700 bg-slate-800 text-sm">
+                <span class="text-slate-400">⏱️</span>
+                <span id="examCountdownDisplay" class="font-mono font-bold text-white">${m}:${s}</span>
+              </div>
+
+              <button onclick="confirmSubmitModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-md transition">
+                Submit Exam
+              </button>
+            </div>
+          </header>
+
+          <!-- Main Layout (3 cols question, 1 col proctor/palette) -->
+          <div class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <!-- Left 3 Cols: Question -->
+            <div class="lg:col-span-3 flex flex-col justify-between space-y-6">
+              <div class="bg-slate-800/80 rounded-3xl p-6 sm:p-8 border border-slate-700 shadow-xl flex-1 flex flex-col">
+                <!-- Question Number Bar -->
+                <div class="flex items-center justify-between pb-4 border-b border-slate-700">
+                  <div class="flex items-center space-x-2">
+                    <span class="text-xs font-extrabold uppercase px-2.5 py-1 rounded-lg bg-royal-500/20 text-royal-300 border border-royal-500/30">
+                      Question ${state.currentQIndex + 1} of ${state.questions.length}
+                    </span>
+                    <span class="text-xs text-slate-400">
+                      [${q.type === 'MCQ' ? 'Single Choice' : q.type === 'MULTI_SELECT' ? 'Multiple Choice' : 'Short Answer'}]
+                    </span>
+                  </div>
+
+                  <div class="flex items-center space-x-3">
+                    <span class="text-xs font-bold text-emerald-400">+${q.marks} Marks</span>
+                    <button onclick="toggleFlagQuestion()" class="p-1.5 rounded-xl border text-xs font-semibold flex items-center space-x-1 ${ans.isMarkedForReview ? 'bg-amber-500/20 border-amber-500 text-amber-300 font-bold' : 'border-slate-600 text-slate-400 hover:text-white'}">
+                      <span>🏷️</span>
+                      <span>${ans.isMarkedForReview ? 'Flagged' : 'Flag'}</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Question Text -->
+                <div class="py-6">
+                  <p class="text-base sm:text-lg font-medium text-slate-100 leading-relaxed">${q.text}</p>
+                </div>
+
+                <!-- Answer Options -->
+                <div class="flex-1 space-y-3">
+                  ${q.type === 'SHORT_ANSWER' ? `
+                    <div>
+                      <label class="block text-xs font-semibold text-slate-400 mb-2">Enter your response below:</label>
+                      <input type="text" value="${ans.textResponse || ''}" oninput="handleShortAnswerInput(this.value)" placeholder="Type answer here..." class="w-full p-4 bg-slate-900 border border-slate-700 rounded-2xl text-sm text-white focus:border-royal-400 outline-none" />
+                    </div>
+                  ` : `
+                    <div class="space-y-3">
+                      ${q.options.map((opt, idx) => {
+                        const isSelected = ans.selectedOptionIds.includes(opt.id);
+                        return `
+                          <div onclick="selectOption('${opt.id}', ${q.type === 'MULTI_SELECT'})" class="p-4 rounded-2xl border cursor-pointer transition flex items-center space-x-3.5 ${isSelected ? 'bg-royal-600/30 border-royal-400 text-white shadow-md' : 'bg-slate-900/60 border-slate-700 text-slate-300 hover:bg-slate-700/40'}">
+                            <div class="w-6 h-6 rounded-lg flex items-center justify-center font-bold text-xs border ${isSelected ? 'bg-royal-500 border-royal-400 text-white' : 'border-slate-600 text-slate-400'}">
+                              ${String.fromCharCode(65 + idx)}
+                            </div>
+                            <span class="text-sm font-medium flex-1">${opt.text}</span>
+                          </div>
+                        `;
+                      }).join('')}
+                    </div>
+                  `}
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="pt-6 mt-6 border-t border-slate-700 flex items-center justify-between">
+                  <button onclick="prevQuestion()" ${state.currentQIndex === 0 ? 'disabled' : ''} class="px-4 py-2.5 rounded-xl border border-slate-700 bg-slate-900 text-slate-300 font-semibold text-xs hover:bg-slate-700 transition disabled:opacity-30 disabled:cursor-not-allowed">
+                    ← Previous
+                  </button>
+                  <span class="text-xs text-slate-400 font-medium">${state.currentQIndex + 1} / ${state.questions.length}</span>
+                  ${state.currentQIndex < state.questions.length - 1 ? `
+                    <button onclick="nextQuestion()" class="px-5 py-2.5 rounded-xl bg-royal-600 hover:bg-royal-500 text-white font-semibold text-xs transition">
+                      Next →
+                    </button>
+                  ` : `
+                    <button onclick="confirmSubmitModal()" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition">
+                      Review & Submit
+                    </button>
+                  `}
+                </div>
+              </div>
+            </div>
+
+            <!-- Right 1 Col: Video Proctor & Question Palette -->
+            <div class="space-y-4 flex flex-col justify-between">
+              <!-- Video Proctor Simulation Box -->
+              <div class="bg-white text-slate-800 rounded-2xl p-4 border border-slate-200 shadow-xs">
+                <div class="flex items-center justify-between pb-2 mb-2 border-b border-slate-100 text-xs font-bold text-navy-900">
+                  <span class="flex items-center"><span class="w-2 h-2 rounded-full bg-emerald-500 mr-1.5 animate-pulse"></span> Live AI Proctor</span>
+                  <span class="text-[10px] text-royal-600 bg-royal-50 px-2 py-0.5 rounded border border-royal-200">ACTIVE</span>
+                </div>
+                <div class="aspect-4/3 bg-slate-950 rounded-xl relative overflow-hidden flex flex-col items-center justify-center text-slate-400 text-center p-3">
+                  <div class="w-12 h-12 rounded-full bg-slate-800 flex items-center justify-center text-xl mb-1">📹</div>
+                  <span class="text-[10px] text-slate-300 font-bold">Face Verified • Feed Encrypted</span>
+                  <div class="absolute top-2 left-2 bg-black/60 text-white text-[9px] px-1.5 py-0.5 rounded">Candidate: Alex Walker</div>
+                </div>
+                <div class="mt-3 flex items-center justify-between text-xs pt-2 border-t border-slate-100">
+                  <span class="text-slate-500">Tab Switches:</span>
+                  <span id="tabCountBadge" class="font-bold px-2 py-0.5 rounded text-xs ${state.tabSwitchCount > 0 ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}">
+                    ${state.tabSwitchCount} / ${state.currentExam.tabSwitchLimit}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Question Palette Grid -->
+              <div class="bg-white text-slate-800 rounded-2xl p-4 border border-slate-200 shadow-xs flex-1">
+                <h4 class="font-bold text-xs text-navy-900 mb-3 pb-2 border-b border-slate-100">Question Palette</h4>
+                <div class="grid grid-cols-5 gap-2">
+                  ${state.questions.map((quest, idx) => {
+                    const a = state.userAnswers[quest.id];
+                    const isAnswered = a && (a.selectedOptionIds.length > 0 || a.textResponse.trim().length > 0);
+                    const isReview = a && a.isMarkedForReview;
+                    const isCurrent = idx === state.currentQIndex;
+
+                    let bg = 'bg-slate-100 text-slate-700 hover:bg-slate-200';
+                    if (isAnswered && !isReview) bg = 'bg-emerald-500 text-white font-bold';
+                    else if (isReview) bg = 'bg-amber-500 text-white font-bold';
+
+                    if (isCurrent) bg += ' ring-2 ring-royal-500 ring-offset-2';
+
+                    return `
+                      <button onclick="gotoQuestion(${idx})" class="h-9 rounded-xl text-xs font-semibold flex items-center justify-center relative transition ${bg}">
+                        ${idx + 1}
+                      </button>
+                    `;
+                  }).join('')}
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100 text-[10px] text-slate-500 space-y-1">
+                  <div class="flex items-center"><span class="w-2.5 h-2.5 bg-emerald-500 rounded mr-1.5"></span> Answered</div>
+                  <div class="flex items-center"><span class="w-2.5 h-2.5 bg-amber-500 rounded mr-1.5"></span> Flagged for review</div>
+                  <div class="flex items-center"><span class="w-2.5 h-2.5 bg-slate-200 rounded mr-1.5"></span> Unanswered</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Warning Modal Placeholder -->
+        <div id="proctorWarningModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-950/80 backdrop-blur-xs">
+          <div class="bg-white rounded-3xl p-6 max-w-md w-full text-center border-2 border-amber-400 shadow-2xl">
+            <div class="w-14 h-14 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-3 font-bold text-2xl">⚠️</div>
+            <h3 class="text-lg font-bold text-navy-900">Security Alert: Tab Switch Detected</h3>
+            <p class="text-xs text-slate-600 mt-2 leading-relaxed">
+              Navigating away from the examination window is recorded in the proctoring audit log.
+            </p>
+            <div class="my-4 p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700">
+              Recorded Tab Switches: <span id="warningModalTabCount" class="font-bold text-amber-700">1</span> of ${state.currentExam.tabSwitchLimit} Limit
+            </div>
+            <button onclick="acknowledgeWarningModal()" class="w-full py-3 bg-navy-900 hover:bg-royal-600 text-white font-bold text-xs rounded-xl shadow-md transition">
+              I Understand & Resume Examination
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function selectOption(optionId, isMulti) {
+      const q = state.questions[state.currentQIndex];
+      const ans = state.userAnswers[q.id];
+      if (isMulti) {
+        if (ans.selectedOptionIds.includes(optionId)) {
+          ans.selectedOptionIds = ans.selectedOptionIds.filter(id => id !== optionId);
+        } else {
+          ans.selectedOptionIds.push(optionId);
+        }
+      } else {
+        ans.selectedOptionIds = [optionId];
+      }
+      renderExamTaking(document.getElementById('appContainer'));
+    }
+
+    function handleShortAnswerInput(val) {
+      const q = state.questions[state.currentQIndex];
+      state.userAnswers[q.id].textResponse = val;
+    }
+
+    function toggleFlagQuestion() {
+      const q = state.questions[state.currentQIndex];
+      state.userAnswers[q.id].isMarkedForReview = !state.userAnswers[q.id].isMarkedForReview;
+      renderExamTaking(document.getElementById('appContainer'));
+    }
+
+    function prevQuestion() {
+      if (state.currentQIndex > 0) {
+        state.currentQIndex--;
+        renderExamTaking(document.getElementById('appContainer'));
+      }
+    }
+
+    function nextQuestion() {
+      if (state.currentQIndex < state.questions.length - 1) {
+        state.currentQIndex++;
+        renderExamTaking(document.getElementById('appContainer'));
+      }
+    }
+
+    function gotoQuestion(idx) {
+      state.currentQIndex = idx;
+      renderExamTaking(document.getElementById('appContainer'));
+    }
+
+    function triggerSimulatedTabSwitch() {
+      state.tabSwitchCount++;
+      const modal = document.getElementById('proctorWarningModal');
+      const countEl = document.getElementById('warningModalTabCount');
+      if (modal && countEl) {
+        countEl.innerText = state.tabSwitchCount;
+        modal.classList.remove('hidden');
+      }
+    }
+
+    function acknowledgeWarningModal() {
+      const modal = document.getElementById('proctorWarningModal');
+      if (modal) modal.classList.add('hidden');
+      renderExamTaking(document.getElementById('appContainer'));
+    }
+
+    // ================= 6. SUBMISSION CONFIRMATION & EVALUATION =================
+    function confirmSubmitModal() {
+      if (confirm('Are you sure you want to finalize your examination? Once submitted, answers are graded on the server.')) {
+        submitExamAction(false);
+      }
+    }
+
+    function submitExamAction(isAuto) {
+      if (state.examTimerInterval) clearInterval(state.examTimerInterval);
+
+      // Server-side evaluation logic
+      let score = 0;
+      state.questions.forEach(q => {
+        const userAns = state.userAnswers[q.id];
+        let correct = false;
+
+        if (q.type === 'MCQ') {
+          const correctOpt = q.options.find(o => o.isCorrect);
+          if (correctOpt && userAns.selectedOptionIds.length === 1 && userAns.selectedOptionIds[0] === correctOpt.id) {
+            correct = true;
+            score += q.marks;
+          } else if (userAns.selectedOptionIds.length > 0 && state.currentExam.allowNegative) {
+            score -= state.currentExam.negativeValue;
+          }
+        } else if (q.type === 'MULTI_SELECT') {
+          const correctIds = q.options.filter(o => o.isCorrect).map(o => o.id);
+          const userIds = userAns.selectedOptionIds;
+          const match = correctIds.length === userIds.length && correctIds.every(id => userIds.includes(id));
+          if (match) {
+            correct = true;
+            score += q.marks;
+          }
+        } else if (q.type === 'SHORT_ANSWER') {
+          const text = (userAns.textResponse || '').trim().toLowerCase();
+          if (text.includes('dijkstra')) {
+            correct = true;
+            score += q.marks;
+          }
+        }
+      });
+
+      score = Math.max(0, Math.round(score * 10) / 10);
+      const percentage = Math.round((score / state.currentExam.totalMarks) * 100);
+      const passed = score >= state.currentExam.passingMarks;
+
+      state.lastEvaluatedResult = {
+        totalScore: score,
+        totalMarks: state.currentExam.totalMarks,
+        percentage,
+        passed,
+        submittedAt: new Date().toLocaleTimeString(),
+        tabSwitches: state.tabSwitchCount,
+      };
+
+      // Add to audit trail
+      state.auditLogs.unshift({
+        id: 'l' + Date.now(),
+        action: 'EXAM_SUBMISSION',
+        entity: 'ExamSession',
+        user: 'Alex Walker (STUDENT)',
+        details: `Submitted ${state.currentExam.title}. Score: ${score}/${state.currentExam.totalMarks} (${percentage}%)`,
+        time: 'Just now'
+      });
+
+      navigatePage('submission_confirm');
+    }
+
+    function renderSubmissionConfirmation(container) {
+      // Fire celebratory confetti!
+      try { confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } }); } catch(e){}
+
+      container.innerHTML = `
+        <div class="fade-in max-w-xl mx-auto py-12 px-4 text-center">
+          <div class="bg-white rounded-3xl p-8 sm:p-10 border border-slate-200 shadow-xl space-y-6">
+            <div class="w-16 h-16 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto text-3xl font-bold shadow-xs">
+              ✓
+            </div>
+            <div>
+              <span class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                Cryptographically Verified & Evaluated
+              </span>
+              <h1 class="text-2xl font-black text-navy-900 tracking-tight mt-3">Examination Submitted Successfully</h1>
+              <p class="text-xs text-slate-500 mt-1">Your responses have been graded using the server-side answer keys.</p>
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-2xl p-5 text-left text-xs space-y-2">
+              <div class="flex justify-between"><span class="text-slate-400">Examination:</span><span class="font-bold text-navy-900">${state.currentExam.title}</span></div>
+              <div class="flex justify-between"><span class="text-slate-400">Candidate:</span><span class="font-bold text-navy-900">Alex Walker</span></div>
+              <div class="flex justify-between"><span class="text-slate-400">Timestamp:</span><span class="font-mono text-slate-700">${state.lastEvaluatedResult?.submittedAt}</span></div>
+              <div class="flex justify-between"><span class="text-slate-400">Proctoring Telemetry:</span><span class="font-bold text-emerald-700">Verified & Logged</span></div>
+            </div>
+
+            <div class="pt-2 flex flex-col sm:flex-row gap-3 justify-center">
+              <button onclick="navigatePage('results')" class="py-3 px-6 bg-navy-900 hover:bg-royal-600 text-white rounded-xl text-xs font-bold shadow-md transition">
+                View Score Breakdown & Review →
+              </button>
+              <button onclick="navigatePage('student_dash')" class="py-3 px-6 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition">
+                Return to Dashboard
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ================= 7. DETAILED GRADED RESULTS =================
+    function renderResultsPage(container) {
+      const res = state.lastEvaluatedResult || {
+        totalScore: 40,
+        totalMarks: 50,
+        percentage: 80,
+        passed: true,
+        submittedAt: 'Just now',
+        tabSwitches: 1
+      };
+
+      container.innerHTML = `
+        <div class="fade-in max-w-4xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+          <button onclick="navigatePage('student_dash')" class="text-xs font-bold text-slate-500 hover:text-navy-900 flex items-center space-x-1">
+            <span>← Back to Dashboard</span>
+          </button>
+
+          <!-- Score Card -->
+          <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between pb-6 border-b border-slate-100 gap-3">
+              <div>
+                <span class="text-[11px] font-bold text-royal-600 uppercase bg-royal-50 px-2 py-0.5 rounded border border-royal-200">${state.currentExam.code}</span>
+                <h1 class="text-2xl font-black text-navy-900 tracking-tight mt-1">${state.currentExam.title}</h1>
+                <p class="text-xs text-slate-500 mt-0.5">Submitted at ${res.submittedAt}</p>
+              </div>
+              <span class="text-sm font-black px-4 py-2 rounded-2xl border ${res.passed ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-rose-50 text-rose-700 border-rose-200'}">
+                ${res.passed ? 'PASSED' : 'FAILED'}
+              </span>
+            </div>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 text-center">
+              <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <span class="text-xs text-slate-400 font-semibold uppercase block">Score</span>
+                <span class="text-2xl font-black text-navy-900 mt-1 block">${res.totalScore} / ${res.totalMarks}</span>
+              </div>
+              <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <span class="text-xs text-slate-400 font-semibold uppercase block">Percentage</span>
+                <span class="text-2xl font-black mt-1 block ${res.passed ? 'text-emerald-600' : 'text-rose-600'}">${res.percentage}%</span>
+              </div>
+              <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <span class="text-xs text-slate-400 font-semibold uppercase block">Passing Cutoff</span>
+                <span class="text-2xl font-black text-slate-700 mt-1 block">${state.currentExam.passingMarks} Pts</span>
+              </div>
+              <div class="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <span class="text-xs text-slate-400 font-semibold uppercase block">Proctor Telemetry</span>
+                <span class="text-2xl font-black text-emerald-600 mt-1 block">${res.tabSwitches} Tabs</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Question-by-Question Review -->
+          <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-5">
+            <h3 class="text-base font-bold text-navy-900 pb-3 border-b border-slate-100">Question Content & Explanation Review</h3>
+
+            <div class="space-y-4">
+              ${state.questions.map((q, idx) => {
+                const ans = state.userAnswers[q.id];
+                return `
+                  <div class="p-5 rounded-2xl border border-slate-200 bg-slate-50/40 space-y-3 text-xs">
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-200 font-bold">
+                      <span class="text-navy-900">Question ${idx + 1} (${q.type})</span>
+                      <span class="text-emerald-600">+${q.marks} Points Max</span>
+                    </div>
+                    <p class="text-sm font-semibold text-slate-900">${q.text}</p>
+                    <div class="space-y-1.5">
+                      ${q.options.map(opt => `
+                        <div class="p-2.5 rounded-xl border flex items-center justify-between ${opt.isCorrect ? 'bg-emerald-50 border-emerald-300 text-emerald-900 font-semibold' : 'bg-white border-slate-200 text-slate-700'}">
+                          <span>${opt.text}</span>
+                          ${opt.isCorrect ? `<span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded">Correct Answer Key</span>` : ''}
+                        </div>
+                      `).join('')}
+                    </div>
+                    ${q.explanation ? `
+                      <div class="p-3 bg-white border border-slate-200 rounded-xl text-slate-600 text-[11px]">
+                        <strong class="text-navy-900 block mb-0.5">Faculty Explanation:</strong>
+                        ${q.explanation}
+                      </div>
+                    ` : ''}
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ================= 8. FACULTY DASHBOARD =================
+    function renderFacultyDashboard(container) {
+      container.innerHTML = `
+        <div class="fade-in max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-3xl p-6 border border-slate-200 shadow-xs">
+            <div>
+              <span class="text-[11px] font-bold text-royal-600 uppercase tracking-wider">Faculty Portal</span>
+              <h1 class="text-2xl font-black text-navy-900 tracking-tight mt-1">Instructor Control Center</h1>
+              <p class="text-xs text-slate-500 mt-0.5">Author assessments, observe active test takers, and evaluate papers.</p>
+            </div>
+            <div class="flex items-center space-x-2">
+              <button onclick="navigatePage('faculty_monitor')" class="px-4 py-2.5 bg-royal-600 hover:bg-royal-700 text-white rounded-xl text-xs font-bold transition">
+                Live Proctor Monitor Room 📡
+              </button>
+              <button onclick="navigatePage('faculty_qbank')" class="px-4 py-2.5 bg-navy-900 hover:bg-royal-600 text-white rounded-xl text-xs font-bold transition">
+                Question Bank
+              </button>
+            </div>
+          </div>
+
+          <!-- Metrics -->
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+              <span class="text-xs font-semibold text-slate-400 uppercase">Created Exams</span>
+              <div class="text-2xl font-black text-navy-900 mt-1">4 Exams</div>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+              <span class="text-xs font-semibold text-slate-400 uppercase">Active / Published</span>
+              <div class="text-2xl font-black text-emerald-600 mt-1">1 Live</div>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+              <span class="text-xs font-semibold text-slate-400 uppercase">Total Submissions</span>
+              <div class="text-2xl font-black text-royal-600 mt-1">12 Graded</div>
+            </div>
+            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+              <span class="text-xs font-semibold text-slate-400 uppercase">Average Pass Rate</span>
+              <div class="text-2xl font-black text-purple-600 mt-1">92%</div>
+            </div>
+          </div>
+
+          <!-- Managed Exams -->
+          <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs">
+            <h3 class="text-base font-bold text-navy-900 pb-3 border-b border-slate-100">Your Managed Examinations</h3>
+            <div class="divide-y divide-slate-100 mt-2 text-xs">
+              <div class="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <div class="flex items-center space-x-2 mb-1">
+                    <span class="font-bold text-royal-600 bg-royal-50 px-2 py-0.5 rounded">${state.currentExam.code}</span>
+                    <span class="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded text-[10px]">PUBLISHED</span>
+                  </div>
+                  <h4 class="font-bold text-sm text-navy-900">${state.currentExam.title}</h4>
+                  <div class="text-slate-500 text-[11px] mt-1">${state.questions.length} Questions • ${state.currentExam.durationMinutes} Mins Duration • ${state.currentExam.totalMarks} Total Marks</div>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <button onclick="navigatePage('faculty_monitor')" class="px-3 py-1.5 bg-royal-600 text-white rounded-xl text-xs font-bold">
+                    Monitor Live Takers 📡
+                  </button>
+                  <button onclick="navigatePage('exam_instructions')" class="px-3 py-1.5 bg-slate-100 text-slate-700 rounded-xl text-xs font-bold">
+                    Student Preview
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ================= 9. LIVE PROCTORING MONITOR ROOM =================
+    function renderLiveMonitoring(container) {
+      container.innerHTML = `
+        <div class="fade-in max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-3xl p-6 border border-slate-200 shadow-xs">
+            <div>
+              <button onclick="navigatePage('faculty_dash')" class="text-xs font-bold text-slate-400 hover:text-navy-900 mb-1">← Back to Dashboard</button>
+              <h1 class="text-2xl font-black text-navy-900 tracking-tight flex items-center space-x-2">
+                <span>Live Examination Proctoring Room</span>
+                <span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full animate-pulse">LIVE STREAM</span>
+              </h1>
+              <p class="text-xs text-slate-500 mt-0.5">${state.currentExam.title}</p>
+            </div>
+            <button onclick="showToast('Candidate alert transmitted via WebSocket', 'info')" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold shadow-xs">
+              Broadcast Exam Notice 📢
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Active Candidates Table -->
+            <div class="lg:col-span-2 bg-white rounded-3xl p-6 border border-slate-200 shadow-xs">
+              <h3 class="text-base font-bold text-navy-900 pb-3 border-b border-slate-100">Active Test Takers</h3>
+              <div class="mt-4 overflow-x-auto text-xs">
+                <table class="w-full text-left">
+                  <thead>
+                    <tr class="text-slate-400 font-bold border-b border-slate-100">
+                      <th class="pb-3">Candidate</th>
+                      <th class="pb-3">Status</th>
+                      <th class="pb-3">Tab Switches</th>
+                      <th class="pb-3 text-right">Intervention</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-slate-100">
+                    <tr>
+                      <td class="py-3 font-bold text-navy-900">Alex Walker<br><span class="text-slate-400 font-normal">student@secureexam.edu</span></td>
+                      <td class="py-3"><span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded font-bold">ONLINE</span></td>
+                      <td class="py-3 font-bold text-amber-600">${state.tabSwitchCount} Switches</td>
+                      <td class="py-3 text-right">
+                        <button onclick="showToast('Warning sent to student: Alex Walker', 'warning')" class="px-2.5 py-1 bg-amber-50 text-amber-700 border border-amber-200 rounded font-bold">Warn</button>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td class="py-3 font-bold text-navy-900">Jane Doe<br><span class="text-slate-400 font-normal">jane.doe@secureexam.edu</span></td>
+                      <td class="py-3"><span class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded font-bold">IN PROGRESS</span></td>
+                      <td class="py-3 font-bold text-emerald-600">0 Switches</td>
+                      <td class="py-3 text-right">
+                        <button onclick="showToast('Warning sent to student: Jane Doe', 'warning')" class="px-2.5 py-1 bg-slate-100 text-slate-700 rounded font-bold">Message</button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Telemetry Incident Feed -->
+            <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs">
+              <h3 class="text-base font-bold text-navy-900 pb-3 border-b border-slate-100">Security Telemetry Feed</h3>
+              <div class="mt-3 space-y-2.5 text-xs">
+                <div class="p-3 bg-amber-50 border border-amber-200 rounded-2xl text-amber-900">
+                  <div class="flex justify-between font-bold text-[11px]">
+                    <span>Alex Walker</span>
+                    <span class="font-mono text-slate-400">Just now</span>
+                  </div>
+                  <div class="font-semibold mt-1">TAB_SWITCH_BLUR</div>
+                  <div class="text-[11px] opacity-80 mt-0.5">Navigated away from active examination tab.</div>
+                </div>
+                <div class="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl text-emerald-900">
+                  <div class="flex justify-between font-bold text-[11px]">
+                    <span>Jane Doe</span>
+                    <span class="font-mono text-slate-400">2m ago</span>
+                  </div>
+                  <div class="font-semibold mt-1">FULLSCREEN_ENTER</div>
+                  <div class="text-[11px] opacity-80 mt-0.5">Entered strict examination viewport.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ================= 10. QUESTION BANK =================
+    function renderQuestionBank(container) {
+      container.innerHTML = `
+        <div class="fade-in max-w-5xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+          <div class="flex items-center justify-between">
+            <button onclick="navigatePage('faculty_dash')" class="text-xs font-bold text-slate-400 hover:text-navy-900">← Back to Dashboard</button>
+            <h1 class="text-2xl font-black text-navy-900">Academic Question Bank</h1>
+          </div>
+
+          <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+              <h3 class="font-bold text-sm text-navy-900">Repository Items (${state.questions.length})</h3>
+              <button onclick="showToast('Modal for adding new question ready', 'info')" class="px-3.5 py-1.5 bg-navy-900 text-white rounded-xl text-xs font-bold">
+                + Add Question
+              </button>
+            </div>
+
+            <div class="space-y-3 text-xs">
+              ${state.questions.map((q, idx) => `
+                <div class="p-4 rounded-2xl border border-slate-200 bg-slate-50/50">
+                  <div class="flex justify-between font-bold text-slate-500 mb-1">
+                    <span>Q#${idx + 1} • ${q.type}</span>
+                    <span class="text-emerald-600">+${q.marks} Pts</span>
+                  </div>
+                  <p class="font-bold text-navy-900 text-sm mb-2">${q.text}</p>
+                  <div class="space-y-1">
+                    ${q.options.map(o => `
+                      <div class="px-2.5 py-1 rounded-lg border text-xs ${o.isCorrect ? 'bg-emerald-50 border-emerald-200 text-emerald-900 font-bold' : 'bg-white border-slate-200 text-slate-600'}">
+                        ${o.text} ${o.isCorrect ? '✓ (Key)' : ''}
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ================= 11. ADMIN DASHBOARD =================
+    function renderAdminDashboard(container) {
+      container.innerHTML = `
+        <div class="fade-in max-w-7xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-3xl p-6 border border-slate-200 shadow-xs">
+            <div>
+              <span class="text-[11px] font-bold text-purple-700 uppercase bg-purple-50 px-2.5 py-0.5 rounded-md border border-purple-200">System Admin</span>
+              <h1 class="text-2xl font-black text-navy-900 tracking-tight mt-1">Institution Command Center</h1>
+              <p class="text-xs text-slate-500 mt-0.5">Campus user governance, course catalog, security rules, and audit logs.</p>
+            </div>
+            <div class="flex items-center space-x-2">
+              <button onclick="navigatePage('admin_users')" class="px-4 py-2 bg-navy-900 text-white rounded-xl text-xs font-bold">Users</button>
+              <button onclick="navigatePage('admin_security')" class="px-4 py-2 bg-royal-600 text-white rounded-xl text-xs font-bold">Security</button>
+              <button onclick="navigatePage('admin_audit')" class="px-4 py-2 bg-slate-100 text-slate-800 rounded-xl text-xs font-bold">Audit Logs</button>
+            </div>
+          </div>
+
+          <!-- Quick Navigation Bar -->
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs text-center font-bold">
+            <button onclick="navigatePage('admin_users')" class="p-4 bg-white rounded-2xl border border-slate-200 hover:shadow-md transition">
+              <div class="text-xl mb-1">👥</div> User Control (${state.usersList.length})
+            </button>
+            <button onclick="navigatePage('admin_security')" class="p-4 bg-white rounded-2xl border border-slate-200 hover:shadow-md transition">
+              <div class="text-xl mb-1">🛡️</div> Security Governance
+            </button>
+            <button onclick="navigatePage('admin_audit')" class="p-4 bg-white rounded-2xl border border-slate-200 hover:shadow-md transition">
+              <div class="text-xl mb-1">📜</div> Audit Trail (${state.auditLogs.length})
+            </button>
+            <button onclick="downloadResultsCsvMock()" class="p-4 bg-white rounded-2xl border border-slate-200 hover:shadow-md transition text-emerald-700">
+              <div class="text-xl mb-1">📥</div> Export Results CSV
+            </button>
+          </div>
+
+          <!-- Audit Logs Preview -->
+          <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-100">
+              <h3 class="font-bold text-base text-navy-900">Recent System Audit Trail</h3>
+              <button onclick="navigatePage('admin_audit')" class="text-xs font-bold text-royal-600 hover:underline">Full Trail →</button>
+            </div>
+            <div class="divide-y divide-slate-100 mt-2 text-xs">
+              ${state.auditLogs.map(l => `
+                <div class="py-3 flex justify-between items-center">
+                  <div>
+                    <span class="font-mono font-bold bg-slate-100 px-2 py-0.5 rounded text-[11px]">${l.action}</span>
+                    <span class="font-bold text-navy-900 ml-2">${l.user}</span>
+                    <div class="text-slate-500 text-[11px] mt-0.5">${l.details}</div>
+                  </div>
+                  <span class="text-slate-400 font-mono text-[11px]">${l.time}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ================= 12. ADMIN USER MANAGEMENT =================
+    function renderAdminUsers(container) {
+      container.innerHTML = `
+        <div class="fade-in max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+          <div class="flex items-center justify-between">
+            <button onclick="navigatePage('admin_dash')" class="text-xs font-bold text-slate-400 hover:text-navy-900">← Back to Command Center</button>
+            <h1 class="text-2xl font-black text-navy-900">User Account Management</h1>
+          </div>
+
+          <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs">
+            <div class="overflow-x-auto text-xs">
+              <table class="w-full text-left">
+                <thead>
+                  <tr class="text-slate-400 border-b border-slate-100 font-bold">
+                    <th class="pb-3">User</th>
+                    <th class="pb-3">Assigned Role</th>
+                    <th class="pb-3">Account State</th>
+                    <th class="pb-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100">
+                  ${state.usersList.map(u => `
+                    <tr>
+                      <td class="py-3 font-bold text-navy-900">${u.fullName}<br><span class="text-slate-400 font-normal">${u.email}</span></td>
+                      <td class="py-3"><span class="px-2 py-0.5 rounded font-bold ${u.role === 'ADMIN' ? 'bg-purple-100 text-purple-800' : u.role === 'FACULTY' ? 'bg-blue-100 text-blue-800' : 'bg-emerald-100 text-emerald-800'}">${u.role}</span></td>
+                      <td class="py-3"><span class="text-emerald-600 font-bold">● Active</span></td>
+                      <td class="py-3 text-right">
+                        <button onclick="showToast('User settings updated', 'success')" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded font-bold">Edit</button>
+                      </td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ================= 13. ADMIN SECURITY GOVERNANCE =================
+    function renderAdminSecurity(container) {
+      container.innerHTML = `
+        <div class="fade-in max-w-5xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+          <div class="flex items-center justify-between">
+            <button onclick="navigatePage('admin_dash')" class="text-xs font-bold text-slate-400 hover:text-navy-900">← Back to Command Center</button>
+            <h1 class="text-2xl font-black text-navy-900">Global Security Governance</h1>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            ${state.securitySettings.map(s => `
+              <div class="p-5 bg-white rounded-2xl border border-slate-200 shadow-xs flex flex-col justify-between text-xs">
+                <div>
+                  <span class="font-mono font-bold text-royal-600 bg-royal-50 px-2 py-0.5 rounded">${s.key}</span>
+                  <p class="text-slate-600 mt-2">${s.desc}</p>
+                </div>
+                <div class="mt-4 pt-3 border-t border-slate-100 flex justify-between items-center font-bold">
+                  <span>Current Setting:</span>
+                  <span class="px-3 py-1 bg-navy-900 text-white rounded-lg">${s.value}</span>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    // ================= 14. ADMIN AUDIT LOGS =================
+    function renderAdminAuditLogs(container) {
+      container.innerHTML = `
+        <div class="fade-in max-w-6xl mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
+          <div class="flex items-center justify-between">
+            <button onclick="navigatePage('admin_dash')" class="text-xs font-bold text-slate-400 hover:text-navy-900">← Back to Command Center</button>
+            <h1 class="text-2xl font-black text-navy-900">Full Audit Log History</h1>
+          </div>
+
+          <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-xs">
+            <div class="divide-y divide-slate-100 text-xs">
+              ${state.auditLogs.map(l => `
+                <div class="py-3.5 flex justify-between items-center">
+                  <div>
+                    <span class="font-mono font-bold bg-slate-100 px-2 py-0.5 rounded text-[11px]">${l.action}</span>
+                    <span class="font-bold text-navy-900 ml-2">${l.user}</span>
+                    <div class="text-slate-600 text-[11px] mt-0.5">${l.details}</div>
+                  </div>
+                  <span class="text-slate-400 font-mono text-[11px]">${l.time}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function downloadResultsCsvMock() {
+      const csv = "Student Name,Email,Exam,Score,Total Marks,Percentage,Result,Timestamp\\n" +
+                  "Alex Walker,student@secureexam.edu,CS201 Midterm,40,50,80%,PASSED," + new Date().toISOString() + "\\n" +
+                  "Jane Doe,jane.doe@secureexam.edu,CS201 Midterm,45,50,90%,PASSED," + new Date().toISOString() + "\\n";
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.setAttribute('href', url);
+      a.setAttribute('download', 'examination_results_export.csv');
+      a.click();
+      showToast('Exported examination results CSV', 'success');
+    }
+
+    // Initial load
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => navigatePage('landing'));
+    } else {
+      navigatePage('landing');
+    }
+  </script>
+</body>
+</html>

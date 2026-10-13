@@ -1,0 +1,238 @@
+// Prisma Schema for Secure Online Examination System
+// Compatible with SQLite (default zero-config) and PostgreSQL
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  passwordHash String
+  fullName     String
+  role         String        @default("STUDENT") // STUDENT, FACULTY, ADMIN
+  avatarUrl    String?
+  isActive     Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  createdExams Examination[] @relation("FacultyExams")
+  sessions     Session[]
+  examSessions ExamSession[]
+  assignments  ExamAssignment[]
+  auditLogs    AuditLog[]
+  notifications Notification[]
+}
+
+model Session {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique
+  ipAddress String?
+  userAgent String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Course {
+  id          String    @id @default(uuid())
+  code        String    @unique
+  name        String
+  department  String
+  description String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  subjects    Subject[]
+}
+
+model Subject {
+  id          String     @id @default(uuid())
+  code        String     @unique
+  name        String
+  courseId    String
+  creditHours Int        @default(3)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  course      Course     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  exams       Examination[]
+  questions   Question[]
+}
+
+model Examination {
+  id                    String           @id @default(uuid())
+  title                 String
+  code                  String           @unique
+  description           String?
+  subjectId             String
+  facultyId             String
+  durationMinutes       Int              @default(60)
+  totalMarks            Float            @default(100)
+  passingMarks          Float            @default(40)
+  status                String           @default("DRAFT") // DRAFT, SCHEDULED, PUBLISHED, ONGOING, COMPLETED
+  startTime             DateTime?
+  endTime               DateTime?
+  
+  // Security & Proctoring Settings
+  randomizeQuestions    Boolean          @default(true)
+  randomizeOptions      Boolean          @default(true)
+  allowNegativeMarking  Boolean          @default(false)
+  negativeMarkingValue  Float            @default(0.25)
+  enableWebcam          Boolean          @default(true)
+  enableAudio           Boolean          @default(false)
+  tabSwitchLimit        Int              @default(3)
+  
+  // Results Policy
+  resultReleasePolicy   String           @default("IMMEDIATE") // IMMEDIATE, MANUAL, SCHEDULED
+  resultsReleasedAt     DateTime?
+  
+  createdAt             DateTime         @default(now())
+  updatedAt             DateTime         @updatedAt
+
+  subject               Subject          @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  faculty               User             @relation("FacultyExams", fields: [facultyId], references: [id], onDelete: Cascade)
+  questions             Question[]
+  sessions              ExamSession[]
+  assignments           ExamAssignment[]
+}
+
+model Question {
+  id            String         @id @default(uuid())
+  examId        String?
+  subjectId     String?
+  text          String
+  type          String         @default("MCQ") // MCQ, MULTI_SELECT, SHORT_ANSWER
+  marks         Float          @default(1.0)
+  negativeMarks Float          @default(0.0)
+  explanation   String?
+  orderIndex    Int            @default(0)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  exam          Examination?   @relation(fields: [examId], references: [id], onDelete: Cascade)
+  subject       Subject?       @relation(fields: [subjectId], references: [id], onDelete: SetNull)
+  options       AnswerOption[]
+  responses     StudentResponse[]
+}
+
+model AnswerOption {
+  id         String   @id @default(uuid())
+  questionId String
+  text       String
+  isCorrect  Boolean  @default(false)
+  orderIndex Int      @default(0)
+
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+}
+
+model ExamAssignment {
+  id        String      @id @default(uuid())
+  examId    String
+  studentId String
+  isEligible Boolean    @default(true)
+  assignedAt DateTime   @default(now())
+
+  exam      Examination @relation(fields: [examId], references: [id], onDelete: Cascade)
+  student   User        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([examId, studentId])
+}
+
+model ExamSession {
+  id                   String            @id @default(uuid())
+  examId               String
+  studentId            String
+  status               String            @default("NOT_STARTED") // NOT_STARTED, IN_PROGRESS, SUBMITTED, AUTO_SUBMITTED, TERMINATED
+  startedAt            DateTime?
+  submittedAt          DateTime?
+  expiresAt            DateTime?
+  
+  totalScore           Float?
+  percentage           Float?
+  passed               Boolean?
+  feedback             String?
+  
+  tabSwitchCount       Int               @default(0)
+  fullscreenExitCount  Int               @default(0)
+  proctorWarningsCount Int               @default(0)
+  isTerminated         Boolean           @default(false)
+
+  createdAt            DateTime          @default(now())
+  updatedAt            DateTime          @updatedAt
+
+  exam                 Examination       @relation(fields: [examId], references: [id], onDelete: Cascade)
+  student              User              @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  responses            StudentResponse[]
+  proctorEvents        ProctoringEvent[]
+
+  @@unique([examId, studentId])
+}
+
+model StudentResponse {
+  id                 String       @id @default(uuid())
+  examSessionId      String
+  questionId         String
+  selectedOptionIds  String?      // Stored as JSON string array ["opt1", "opt2"]
+  textResponse       String?
+  isCorrect          Boolean?
+  marksAwarded       Float?
+  isMarkedForReview  Boolean      @default(false)
+  savedAt            DateTime     @default(now())
+
+  examSession        ExamSession  @relation(fields: [examSessionId], references: [id], onDelete: Cascade)
+  question           Question     @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([examSessionId, questionId])
+}
+
+model ProctoringEvent {
+  id            String      @id @default(uuid())
+  examSessionId String
+  eventType     String      // FULLSCREEN_ENTER, FULLSCREEN_EXIT, TAB_SWITCH_BLUR, TAB_SWITCH_FOCUS, WEBCAM_DENIED, MULTIPLE_FACES, NO_FACE, SUSPICIOUS_AUDIO, COPY_PASTE_ATTEMPT
+  severity      String      @default("LOW") // LOW, MEDIUM, HIGH
+  details       String?
+  timestamp     DateTime    @default(now())
+
+  examSession   ExamSession @relation(fields: [examSessionId], references: [id], onDelete: Cascade)
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  title     String
+  message   String
+  type      String   @default("INFO") // INFO, WARNING, SUCCESS, ALERT
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  action    String
+  entity    String
+  entityId  String?
+  ipAddress String?
+  details   String?
+  timestamp DateTime @default(now())
+
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+}
+
+model GlobalSecuritySetting {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String
+  description String?
+  updatedAt   DateTime @updatedAt
+}
