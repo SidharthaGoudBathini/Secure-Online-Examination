@@ -1,9 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
+import 'cookie-parser';
 import { verifyToken, TokenPayload } from '../utils/jwt';
 import prisma from '../prisma';
 
+export interface AuthenticatedUser extends TokenPayload {
+  isActive?: boolean;
+}
+
 export interface AuthenticatedRequest extends Request {
-  user?: TokenPayload & { isActive?: boolean };
+  user?: AuthenticatedUser;
+  cookies: Record<string, any>;
 }
 
 export const authenticate = async (
