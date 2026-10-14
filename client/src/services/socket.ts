@@ -5,7 +5,8 @@ let socket: Socket | null = null;
 export const getSocket = (): Socket => {
   if (!socket) {
     const token = localStorage.getItem('token');
-    socket = io('/', {
+    const socketEndpoint = (import.meta as any).env?.VITE_SOCKET_URL || (import.meta as any).env?.VITE_API_BASE_URL || '/';
+    socket = io(socketEndpoint, {
       auth: { token },
       autoConnect: false,
       reconnection: true,
